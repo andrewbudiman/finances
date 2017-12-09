@@ -2,6 +2,7 @@ package apps
 
 import categorize.Categorizor
 import categorize.impl.{CategorizorImpl, ContainsCategoryMatcher}
+import config.Config
 import data.csv.CsvDataWriterImpl
 import model.impl._
 import parser.impl.CapitalOneDataParserImpl
@@ -27,8 +28,13 @@ object AddNewTransactions {
       uncategorizedTransactions.foreach { t =>
         println(s"\t$t")
       }
-      val newCategorizor = getNewCategorizor(categorizor)
-      transformTransactions(transactions, newCategorizor)
+      println(s"Categorized transactions:")
+      categorizedTransactions.foreach { t =>
+        println(s"\t$t")
+      }
+      //val newCategorizor = getNewCategorizor(categorizor)
+      //transformTransactions(transactions, newCategorizor)
+      Set.empty
     } else {
       categorizedTransactions.map {
         case (t, Some(category)) => Transaction(t.account, t.epoch, t.description, category, t.amount)
@@ -40,10 +46,13 @@ object AddNewTransactions {
   def main(args: Array[String]): Unit = {
     import scala.concurrent.ExecutionContext.Implicits.global
 
+    val config = Config.load("dummy_config.json")
+    val userMetadata = UserMetadata.fromConfig(config)
+
     val parser = new CapitalOneDataParserImpl("/tmp/capital_one.csv")
     val rawTransactions = parser.parseTransactions
 
-    val categorizor = new CategorizorImpl(Set(ContainsCategoryMatcher("ANOTHER CAFE", Category("Another Cafe", Priority()))))
+    val categorizor = new CategorizorImpl(userMetadata.matchers)
 
     val transactions = transformTransactions(rawTransactions, categorizor)
     transactions.foreach(t => println(s"\t$t"))

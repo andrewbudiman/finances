@@ -1,3 +1,3 @@
 package model.impl
 
-case class Category(name: String, priority: Priority)
+case class Category(id: Int, name: String, priority: Priority)

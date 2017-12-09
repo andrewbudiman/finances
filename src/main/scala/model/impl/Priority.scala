@@ -1,4 +1,4 @@
 package model.impl
 
-case class Priority()
+case class Priority(id: Int, name: String)
 
