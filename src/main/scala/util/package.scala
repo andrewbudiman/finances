@@ -1,10 +1,15 @@
 import java.io.{BufferedWriter, File, FileWriter}
 
+import org.json4s.JsonAST.JValue
+import org.json4s.{DefaultFormats, Formats}
+import org.json4s.jackson.{JsonMethods, Serialization}
 import resource._
 
 import scala.io.Source
 
 package object util {
+
+  val jsonDefaultFormats: Formats = DefaultFormats
 
   def readFileContents(file: File): String = {
     for (input <- managed(Source.fromFile(file))) {
@@ -14,9 +19,14 @@ package object util {
   }
 
   def writeContentsToFile(content: String, file: File): Unit = {
-    //for (writer <- managed(new BufferedWriter(new FileWriter(file)))) {
-    //  writer.append(content)
-    //}
     managed(new BufferedWriter(new FileWriter(file))).acquireAndGet(_.append(content))
+  }
+
+  def parseJson(json: String)(implicit formats: Formats = jsonDefaultFormats): JValue = {
+    JsonMethods.parse(json)
+  }
+
+  def toJson(obj: AnyRef)(implicit formats: Formats = jsonDefaultFormats): String = {
+    Serialization.writePretty(obj)
   }
 }

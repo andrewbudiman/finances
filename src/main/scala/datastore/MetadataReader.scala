@@ -1,8 +1,8 @@
 package datastore
 
-import model.metadata.UserMetadata
+import model.metadata.Metadata
 
 trait MetadataReader {
 
-  def loadMetadata(): UserMetadata
+  def loadMetadata(): Metadata
 }

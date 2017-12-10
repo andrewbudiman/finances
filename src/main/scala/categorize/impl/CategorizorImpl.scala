@@ -7,7 +7,7 @@ import scala.collection.immutable.Set
 
 class CategorizorImpl(matchers: Set[Matcher]) extends Categorizor {
 
-  // xcxc - should also take epoch for one-time categorizations
+  // TODO: implement one-time categorizations
   def categorize(description: String): Option[Category] = {
     matchers.flatMap(_.matchCategory(description.toLowerCase)) match {
       case matchedCategories if matchedCategories.size == 1 => Some(matchedCategories.head)

@@ -1,8 +1,8 @@
 package datastore
 
-import model.metadata.UserMetadata
+import model.metadata.Metadata
 
 trait MetadataWriter {
 
-  def writeMetadata(userMetadata: UserMetadata): Unit
+  def writeMetadata(metadata: Metadata): Unit
 }

@@ -2,8 +2,8 @@ package apps
 
 import categorize.Categorizor
 import categorize.impl.CategorizorImpl
-import datastore.csv.CsvDataWriterImpl
-import datastore.jsonstore.JsonMetadataStore
+import config.Config
+import datastore.impl._
 import model.transactions.{RawTransaction, Transaction}
 import org.rogach.scallop.{ScallopConf, ScallopOption}
 import parser.impl.CapitalOneDataParserImpl
@@ -12,11 +12,6 @@ import scala.collection.immutable.Set
 import scala.concurrent.ExecutionContext
 
 object AddNewTransactions {
-
-  def getNewCategorizor(categorizor: Categorizor): Categorizor = {
-    Thread.sleep(5000)
-    categorizor
-  }
 
   def transformTransactions(transactions: Set[RawTransaction],
                             categorizor: Categorizor)
@@ -33,8 +28,7 @@ object AddNewTransactions {
       categorizedTransactions.foreach { t =>
         println(s"\t$t")
       }
-      //val newCategorizor = getNewCategorizor(categorizor)
-      //transformTransactions(transactions, newCategorizor)
+      // TODO: prompt for new matchers
       Set.empty
     } else {
       categorizedTransactions.map {
@@ -46,13 +40,8 @@ object AddNewTransactions {
 
   class ArgParser(arguments: Seq[String]) extends ScallopConf(arguments) {
     val configFile: ScallopOption[String] = opt[String](required = true)
-    val resultConfigFile: ScallopOption[String] = opt[String](required = true)
 
     verify()
-
-    if (configFile() == resultConfigFile()) {
-      throw new RuntimeException(s"xcxc - Must create a new config, not override the old one")
-    }
   }
 
   def main(args: Array[String]): Unit = {
@@ -60,23 +49,24 @@ object AddNewTransactions {
 
     // Load configuration
     val argParser = new ArgParser(args)
-    val metadataReader = JsonMetadataStore.reader(argParser.configFile())
-    val userMetadata = metadataReader.loadMetadata()
+    val config = Config.load(argParser.configFile())
+
+    // Read metadata
+    val metadataReader = getMetadataReader(config.datastoreConfig)
+    val metadata = metadataReader.loadMetadata()
 
     // Parse transactions
     val parser = new CapitalOneDataParserImpl("/tmp/capital_one.csv")
     val rawTransactions = parser.parseTransactions
 
     // Categorize transactions
-    val categorizor = new CategorizorImpl(userMetadata.matchers)
+    val categorizor = new CategorizorImpl(metadata.matchers)
     val transactions = transformTransactions(rawTransactions, categorizor)
     transactions.foreach(t => println(s"\t$t"))
 
-    // Output new config
-    val newUserMetadata = userMetadata
-    val metadataWriter = JsonMetadataStore.writer(argParser.resultConfigFile())
-    metadataWriter.writeMetadata(newUserMetadata)
-
-    //val writer = new CsvDataWriterImpl("/tmp/dummy.csv")
+    // Write new metadata
+    val newMetadata = metadata
+    val metadataWriter = getMetadataWriter(config.datastoreConfig)
+    metadataWriter.writeMetadata(newMetadata)
   }
 }
