@@ -1,6 +1,6 @@
 package parser.impl
 
-import model.impl.RawTransaction
+import model.transactions.RawTransaction
 import parser.DataParser
 
 import scala.collection.immutable.Set

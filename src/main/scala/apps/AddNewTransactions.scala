@@ -1,10 +1,11 @@
 package apps
 
 import categorize.Categorizor
-import categorize.impl.{CategorizorImpl, ContainsCategoryMatcher}
-import config.Config
-import data.csv.CsvDataWriterImpl
-import model.impl._
+import categorize.impl.CategorizorImpl
+import datastore.csv.CsvDataWriterImpl
+import datastore.jsonstore.JsonMetadataStore
+import model.transactions.{RawTransaction, Transaction}
+import org.rogach.scallop.{ScallopConf, ScallopOption}
 import parser.impl.CapitalOneDataParserImpl
 
 import scala.collection.immutable.Set
@@ -43,20 +44,39 @@ object AddNewTransactions {
     }
   }
 
+  class ArgParser(arguments: Seq[String]) extends ScallopConf(arguments) {
+    val configFile: ScallopOption[String] = opt[String](required = true)
+    val resultConfigFile: ScallopOption[String] = opt[String](required = true)
+
+    verify()
+
+    if (configFile() == resultConfigFile()) {
+      throw new RuntimeException(s"xcxc - Must create a new config, not override the old one")
+    }
+  }
+
   def main(args: Array[String]): Unit = {
     import scala.concurrent.ExecutionContext.Implicits.global
 
-    val config = Config.load("dummy_config.json")
-    val userMetadata = UserMetadata.fromConfig(config)
+    // Load configuration
+    val argParser = new ArgParser(args)
+    val metadataReader = JsonMetadataStore.reader(argParser.configFile())
+    val userMetadata = metadataReader.loadMetadata()
 
+    // Parse transactions
     val parser = new CapitalOneDataParserImpl("/tmp/capital_one.csv")
     val rawTransactions = parser.parseTransactions
 
+    // Categorize transactions
     val categorizor = new CategorizorImpl(userMetadata.matchers)
-
     val transactions = transformTransactions(rawTransactions, categorizor)
     transactions.foreach(t => println(s"\t$t"))
 
-    val writer = new CsvDataWriterImpl("/tmp/dummy.csv")
+    // Output new config
+    val newUserMetadata = userMetadata
+    val metadataWriter = JsonMetadataStore.writer(argParser.resultConfigFile())
+    metadataWriter.writeMetadata(newUserMetadata)
+
+    //val writer = new CsvDataWriterImpl("/tmp/dummy.csv")
   }
 }

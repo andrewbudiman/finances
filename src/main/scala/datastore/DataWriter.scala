@@ -1,6 +1,6 @@
-package data
+package datastore
 
-import model.impl.RawTransaction
+import model.transactions.RawTransaction
 
 import scala.concurrent.Future
 

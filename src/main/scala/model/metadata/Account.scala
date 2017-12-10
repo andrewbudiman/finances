@@ -1,4 +1,4 @@
-package model.impl
+package model.metadata
 
 sealed trait Account
 

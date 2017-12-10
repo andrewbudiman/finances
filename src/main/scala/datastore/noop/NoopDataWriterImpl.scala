@@ -1,7 +1,7 @@
-package data.noop
+package datastore.noop
 
-import data.DataWriter
-import model.impl.RawTransaction
+import datastore.DataWriter
+import model.transactions.RawTransaction
 
 import scala.concurrent.Future
 

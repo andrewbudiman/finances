@@ -1,10 +1,10 @@
-package data.csv
+package datastore.csv
 
 import java.io.{BufferedWriter, FileWriter}
 
 import com.opencsv.CSVWriter
-import data.DataWriter
-import model.impl.RawTransaction
+import datastore.DataWriter
+import model.transactions.RawTransaction
 
 import scala.concurrent.Future
 

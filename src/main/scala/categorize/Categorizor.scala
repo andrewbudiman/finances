@@ -1,6 +1,6 @@
 package categorize
 
-import model.impl.Category
+import model.metadata.Category
 
 trait Categorizor {
 

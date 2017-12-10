@@ -4,7 +4,8 @@ import java.io.FileReader
 import java.text.SimpleDateFormat
 
 import com.opencsv.CSVReader
-import model.impl.{Account, RawTransaction}
+import model.metadata.Account
+import model.transactions.RawTransaction
 import parser.DataParser
 
 import scala.collection.JavaConverters._

@@ -10,3 +10,4 @@ libraryDependencies += "org.easymock" % "easymock" % "3.1" % Test
 libraryDependencies += "com.jsuereth" %% "scala-arm" % "2.0"
 libraryDependencies += "com.opencsv" % "opencsv" % "4.1"
 libraryDependencies += "org.json4s" %% "json4s-jackson" % "3.5.3"
+libraryDependencies += "org.rogach" %% "scallop" % "3.1.1"

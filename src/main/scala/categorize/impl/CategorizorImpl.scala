@@ -1,11 +1,11 @@
 package categorize.impl
 
-import categorize.{Categorizor, CategoryMatcher}
-import model.impl.Category
+import categorize.Categorizor
+import model.metadata.{Category, Matcher}
 
 import scala.collection.immutable.Set
 
-class CategorizorImpl(matchers: Set[CategoryMatcher]) extends Categorizor {
+class CategorizorImpl(matchers: Set[Matcher]) extends Categorizor {
 
   // xcxc - should also take epoch for one-time categorizations
   def categorize(description: String): Option[Category] = {

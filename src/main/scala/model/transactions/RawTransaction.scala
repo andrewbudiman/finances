@@ -1,4 +1,6 @@
-package model.impl
+package model.transactions
+
+import model.metadata.Account
 
 case class RawTransaction(
   account: Account,

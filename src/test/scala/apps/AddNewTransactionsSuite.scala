@@ -1,7 +1,8 @@
 package apps
 
-import data.{DataReader, DataWriter}
-import model.impl.{Account, Category, RawTransaction}
+import datastore.{DataWriter, MetadataReader}
+import model.transactions.RawTransaction
+import model.metadata.{Account, Category}
 import parser.DataParser
 import org.scalatest.FunSuite
 import org.scalatest.concurrent.ScalaFutures
@@ -19,7 +20,7 @@ class AddNewTransactionsSuite extends FunSuite with ScalaFutures with EasyMockSu
 
   test("Add only new transactions") {
     val dataParser = mock[DataParser]
-    val dataReader = mock[DataReader]
+    val dataReader = mock[MetadataReader]
     val dataWriter = mock[DataWriter]
 
     val tx0 = createTransaction(0)
